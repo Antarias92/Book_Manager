@@ -1,24 +1,44 @@
-import logo from './logo.svg';
 import './App.css';
+import { useState } from 'react';
+import Layout from './Layout';
+import AddBook from './AddBook';
+import ListItems from './ListItems';
+import EditBooks from './EditBooks';
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
+
+  const [items , setItems] = useState([
+    {id : 1, title: "Frankenstein" , author: "Mary Shelley", genre: "Science Fiction", status: ""}
+  ])
+
+  function deleteBook(id)
+  {
+      setItems(items.filter((item) => item.id !== id));
+  }
+
+  function addBook(item) {
+    const newItem = { ...item, id: Date.now() };
+    setItems([...items, newItem]);
+  }
+
+  function updateBook(updated){
+    setItems(items.map((item) => item.id === updated.id ? updated : item));
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+        <Layout>
+            <Routes>
+               <Route path="/" element={ <ListItems items={items} onDelete={deleteBook} /> }    />
+
+               <Route path="/add" element={ <AddBook onAdd={addBook} /> }    />
+
+               <Route path='/edit/:id' element ={<EditBooks items = {items} onUpdate={updateBook}/>}/>
+            </Routes>
+        </Layout>
+    </Router>
   );
 }
 
